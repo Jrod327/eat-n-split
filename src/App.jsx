@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+// import { useState } from "react";
 import "./index.css";
 
 const initialFriends = [
@@ -22,8 +23,38 @@ const initialFriends = [
 	}
 ];
 
-function App() {
-	return <></>;
+export default function App() {
+	return (
+		<div className="app">
+			<div className="sidebar">
+				<FriendList />
+			</div>
+		</div>
+	);
 }
 
-export default App;
+function FriendList() {
+	return (
+		<ul>
+			{initialFriends.map(friend => (
+				<Friend friend={friend} key={friend.id} />
+			))}
+		</ul>
+	);
+}
+
+function Friend({ friend }) {
+	return (
+		<li>
+			<img src={friend.image} alt={friend.name} />
+			<h3>{friend.name}</h3>
+			<p>
+				You owe {friend.name} ${friend.balance}
+			</p>
+		</li>
+	);
+}
+
+function newFriendForm() {}
+
+function BillForm() {}
