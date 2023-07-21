@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 // import { useState } from "react";
+import { useState } from "react";
 import "./index.css";
 
 const initialFriends = [
@@ -24,22 +25,37 @@ const initialFriends = [
 ];
 
 export default function App() {
+	const [friendFormOpen, setFriendFormOpen] = useState(false);
+	const [friendList, setFriendList] = useState(initialFriends);
+
+	function toggleFriendForm() {
+		setFriendFormOpen(!friendFormOpen);
+	}
+
+	function handleAddFriend(newFriend) {
+		setFriendList([...friendList, newFriend]);
+		toggleFriendForm();
+	}
+
 	return (
 		<div className="app">
 			<div className="sidebar">
-				<FriendList />
-				<NewFriendForm />
-				<Button>Add Friend</Button>
+				<FriendList friendList={friendList} />
+				{friendFormOpen && <NewFriendForm onSubmit={handleAddFriend} />}
+
+				<Button onClick={toggleFriendForm}>
+					{friendFormOpen ? "Close" : "Add Friend"}
+				</Button>
 			</div>
 			<BillForm />
 		</div>
 	);
 }
 
-function FriendList() {
+function FriendList({ friendList }) {
 	return (
 		<ul>
-			{initialFriends.map(friend => (
+			{friendList.map(friend => (
 				<Friend friend={friend} key={friend.id} />
 			))}
 		</ul>
@@ -68,14 +84,38 @@ function Friend({ friend }) {
 	);
 }
 
-function NewFriendForm() {
+function NewFriendForm({ onSubmit }) {
+	const [friendName, setFriendName] = useState("");
+	const [imgURL, setImgURL] = useState("");
+
+	const newFriend = {
+		id: Math.floor(Math.random() * 100000),
+		name: friendName,
+		image: imgURL,
+		balance: 0
+	};
+
+	function handleSubmit(e) {
+		e.preventDefault();
+		onSubmit(newFriend);
+		setFriendName("");
+		setImgURL("");
+	}
 	return (
 		<>
-			<form className="form-add-friend">
+			<form className="form-add-friend" onSubmit={handleSubmit}>
 				<label>🧍Friend name</label>
-				<input type="text" />
+				<input
+					type="text"
+					value={friendName}
+					onChange={e => setFriendName(e.target.value)}
+				/>
 				<label>🖼️Image URL</label>
-				<input type="text" />
+				<input
+					type="text"
+					value={imgURL}
+					onChange={e => setImgURL(e.target.value)}
+				/>
 				<Button>Add</Button>
 			</form>
 		</>
@@ -102,6 +142,10 @@ function BillForm() {
 	);
 }
 
-function Button({ children }) {
-	return <button className="button">{children}</button>;
+function Button({ children, onClick }) {
+	return (
+		<button className="button" onClick={onClick}>
+			{children}
+		</button>
+	);
 }
